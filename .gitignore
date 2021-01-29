@@ -1,0 +1,9 @@
+.env
+
+# directories to ignore
+jenkins_home/
+logs/
+.idea/
+
+# flag for prior configuration files
+*.old
