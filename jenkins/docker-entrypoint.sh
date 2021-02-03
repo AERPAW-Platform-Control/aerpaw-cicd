@@ -30,7 +30,11 @@ if [[ ! -f "/var/jenkins_home/casc.yaml" ]]; then
   cp /casc.yaml /var/jenkins_home/casc.yaml
 fi
 
+# check if casc.yaml has been updated since last run
+if ! diff /casc.yaml /var/jenkins_home/casc.yaml; then
+  cp -f /casc.yaml /var/jenkins_home/casc.yaml
+fi
+
 # run Jenkins as user jenkins
 sed -i "s# exec java# exec $(which java)#g" /usr/local/bin/jenkins.sh
-#/usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 su jenkins -c 'cd $HOME; export PATH=$PATH:$(which java); /usr/local/bin/jenkins.sh'

@@ -1,4 +1,9 @@
+# ignore generated files
 .env
+nginx/default.conf
+nginx/index.html
+scripts/cicd-variables.sh
+docker-compose.yaml
 
 # directories to ignore
 jenkins_home/
@@ -6,4 +11,4 @@ logs/
 .idea/
 
 # flag for prior configuration files
-*.old
+*.orig

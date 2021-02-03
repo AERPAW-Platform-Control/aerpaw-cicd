@@ -15,8 +15,12 @@
 <p>Choose from the options below: </p>
 <hr>
 <p>
-    <b>Jenkins</b> - <a href="http://127.0.0.1:8080/jenkins/">http://127.0.0.1:8080/jenkins/</a><br/>
-    <b>Gitea</b> - <a href="http://127.0.0.1:8080/gitea/">http://127.0.0.1:8080/gitea/</a><br/>
+    <b>Jenkins</b> - <a href="https://127.0.0.1:8443/jenkins/">
+      https://127.0.0.1:8443/jenkins/
+    </a><br/>
+    <b>Gitea</b> - <a href="http://127.0.0.1:8080/gitea/">
+      http://127.0.0.1:8080/gitea/
+    </a><br/>
 </p>
 </body>
 </html>

@@ -1,6 +1,6 @@
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
-  numExecutors: 5
+  numExecutors: 4
   scmCheckoutRetryCount: 2
   mode: NORMAL
 
@@ -9,10 +9,8 @@ jenkins:
       allowsSignup: false
       users:
         - id: "admin"
-          name: "Admin"
+          name: "AERPAW Admin"
           description: "AERPAW Admin"
-          password: "password123!"
-        - id: "newuser"
           password: "password123!"
 
   authorizationStrategy:
