@@ -156,8 +156,8 @@ _generate_docker_compose_yaml() {
 version: '3.6'
 services:
 
-  jenkins:
-    image: jenkins.nginx.docker:lts
+  jenkins-${AERPAW_UUID}:
+    image: jenkins-${AERPAW_UUID}:latest
     build:
       context: ./jenkins
       dockerfile: Dockerfile
@@ -177,7 +177,7 @@ services:
       - CASC_JENKINS_CONFIG=${CASC_JENKINS_CONFIG}
     restart: always
 
-  nginx:
+  nginx-${AERPAW_UUID}:
     image: nginx:latest
     container_name: nginx-${AERPAW_UUID}
     ports:

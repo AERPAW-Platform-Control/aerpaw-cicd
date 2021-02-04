@@ -46,6 +46,7 @@ EOF
 # make jenkins_home directory if it does not exist
 if [ ! -d "${HOST_JENKINS_HOME}" ]; then
 	mkdir -p ${HOST_JENKINS_HOME}
+    chmod 777 ${HOST_JENKINS_HOME}
 fi
 
 # clone aerpaw-cicd repo if it does not exist
@@ -54,6 +55,9 @@ if [ ! -d "${HOST_CICD_REPO}" ]; then
   git clone https://github.com/AERPAW-Platform-Control/aerpaw-cicd.git
   cd -
 fi
+
+# generate cicd variables file
+_generate_cicd_variables
 
 # attempt to deploy aerpaw-cicd environment
 cd ${HOST_CICD_REPO}/scripts
