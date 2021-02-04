@@ -57,10 +57,10 @@ server {
         proxy_set_header        X-Forwarded-Proto \$scheme;
 
         # Fix the "It appears that your reverse proxy set up is broken" error.
-        proxy_pass              http://jenkins:8080/jenkins/;
+        proxy_pass              http://jenkins-${AERPAW_UUID}:8080/jenkins/;
         proxy_read_timeout      90;
 
-        proxy_redirect          http://jenkins:8080/jenkins/ http://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/jenkins/;
+        proxy_redirect          http://jenkins-${AERPAW_UUID}:8080/jenkins/ http://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/jenkins/;
 
         # Required for new HTTP-based CLI
         proxy_http_version 1.1;
