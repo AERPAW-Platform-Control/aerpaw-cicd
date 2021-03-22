@@ -11,7 +11,7 @@ REPO_DIR=$(dirname ${SCRIPTS_DIR})
 _generate_dot_env() {
   cat > ${REPO_DIR}/.env << EOF
 # AERPAW - user/project/experiment settings
-AERPAW_UUID=${AERPAW_UUID:-deadbeef-dead-beef-dead-beefdeadbeef}
+AERPAW_UUID=${AERPAW_UUID:-00000000-0000-0000-0000-000000000000}
 
 # jenkins - jenkins.nginx.docker:lts
 UID_JENKINS=${UID_JENKINS:-1000}
@@ -20,7 +20,7 @@ JENKINS_OPTS=${JENKINS_OPTS:-${DBQT}--prefix=/jenkins${DBQT}}
 JENKINS_INBOUND_AGENT_PORT=${JENKINS_INBOUND_AGENT_PORT:-50000}
 JENKINS_INBOUND_CLI_PORT=${JENKINS_INBOUND_CLI_PORT:-50022}
 JENKINS_ADMIN_ID=${JENKINS_ADMIN_ID:-admin}
-JENKINS_ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD:-default123!}
+JENKINS_ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD:-password123!}
 
 # nginx - nginx:latest
 NGINX_INDEX=${NGINX_INDEX:-./nginx/index.html}

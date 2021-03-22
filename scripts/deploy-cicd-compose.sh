@@ -2,6 +2,8 @@
 
 # Run this from the scripts directory
 
+BUILDER_TAG="latest"
+
 DBQT='"'
 
 SCRIPTS_DIR=$(pwd)
@@ -14,7 +16,7 @@ source cicd-variables.sh
 cd ${REPO_DIR}
 docker-compose stop && docker-compose rm -fv
 docker-compose pull
-docker-compose build
+docker-compose build --build-arg BUILDER_TAG="${BUILDER_TAG}"
 docker-compose up -d
 
 cd ${SCRIPTS_DIR}

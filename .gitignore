@@ -4,6 +4,7 @@ nginx/default.conf
 nginx/index.html
 scripts/cicd-variables.sh
 docker-compose.yaml
+jenkins/casc.yaml
 
 # directories to ignore
 jenkins_home/
