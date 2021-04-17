@@ -1,12 +1,14 @@
 version: '3.6'
 services:
 
-  jenkins:
-    image: jenkins.nginx.docker:lts
+  jenkins-00000000-0000-0000-0000-000000000000:
+    image: jenkins-00000000-0000-0000-0000-000000000000:latest
     build:
       context: ./jenkins
       dockerfile: Dockerfile
     container_name: jenkins-00000000-0000-0000-0000-000000000000
+    networks:
+      - cicd-net-00000000-0000-0000-0000-000000000000
     ports:
       - '50000:50000'
       - '50022:50022'
@@ -14,17 +16,38 @@ services:
       - ./jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - JENKINS_ADMIN_ID=admin
+      - JENKINS_ADMIN_ID=projectpi
       - JENKINS_ADMIN_PASSWORD=password123!
-      - UID_JENKINS=1000
-      - GID_JENKINS=1000
+      - UID_JENKINS=20049
+      - GID_JENKINS=10000
       - JENKINS_OPTS="--prefix=/jenkins"
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
     restart: always
 
-  nginx:
+  gitea-00000000-0000-0000-0000-000000000000:
+    image: gitea/gitea:1
+    container_name: gitea-00000000-0000-0000-0000-000000000000
+    networks:
+      - cicd-net-00000000-0000-0000-0000-000000000000
+    environment:
+      - USER_UID=20049
+      - USER_GID=10000
+      - APP_NAME="AERPAW Experimeter Gitea"
+      - ROOT_URL="https://127.0.0.1:8443/gitea/"
+      - DISABLE_REGISTRATION=true
+      - INSTALL_LOCK=true
+    volumes:
+      - ./gitea_home:/data
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '3022:22'
+    restart: always
+
+  nginx-00000000-0000-0000-0000-000000000000:
     image: nginx:latest
     container_name: nginx-00000000-0000-0000-0000-000000000000
+    networks:
+      - cicd-net-00000000-0000-0000-0000-000000000000
     ports:
       - 8080:80
       - 8443:443
@@ -34,3 +57,10 @@ services:
       - ./ssl:/etc/ssl
       - ./logs/nginx:/var/log/nginx
     restart: always
+
+networks:
+  cicd-net-00000000-0000-0000-0000-000000000000:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.100.1.0/24"

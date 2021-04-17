@@ -8,6 +8,7 @@ jenkins/casc.yaml
 
 # directories to ignore
 jenkins_home/
+gitea_home/
 logs/
 .idea/
 

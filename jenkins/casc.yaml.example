@@ -12,11 +12,16 @@ jenkins:
           name: "AERPAW Admin"
           description: "AERPAW Admin"
           password: "password123!"
+        - id: "projectpi"
+          name: "AERPAW Experimeter Admin"
+          description: "Project PI"
+          password: "password123!"
 
   authorizationStrategy:
     globalMatrix:
       permissions:
         - "Overall/Administer:admin"
+        - "Overall/Administer:projectpi"
         - "Overall/Read:authenticated"
 
   remotingSecurity:

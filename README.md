@@ -1,4 +1,4 @@
-# AERPAW CI/CD with Gitea
+# AERPAW CI/CD with Jenkins and Gitea
 
 **WORK IN PROGRESS**
 
@@ -33,3 +33,7 @@ UID_JENKINS=$(id -u) GID_JENKINS=$(id -g) docker-compose up -d
 - Nginx: [http://nginx.org/en/docs/](http://nginx.org/en/docs/)
 
 ### 
+
+```
+gitea admin create-user --name frank --password password123! --email email@email.com admin
+```

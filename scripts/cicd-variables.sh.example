@@ -5,18 +5,32 @@
 # AERPAW
 export AERPAW_UUID=00000000-0000-0000-0000-000000000000
 export FQDN_OR_IP=127.0.0.1
+export DOCKER_SUBNET=10.100.1.0/24
 
 # Jenkins
-export JENKINS_ADMIN_ID="admin"
-export JENKINS_ADMIN_NAME="AERPAW Admin"
+export JENKINS_ADMIN_ID="projectpi"
+export JENKINS_ADMIN_NAME="AERPAW Experimeter Admin"
 export JENKINS_ADMIN_PASSWORD="password123!"
-export UID_JENKINS=1000
-export GID_JENKINS=1000
+export UID_JENKINS=20049
+export GID_JENKINS=10000
 export JENKINS_HOME=./jenkins_home
 export JENKINS_OPTS="--prefix=/jenkins"
 export JENKINS_SLAVE_AGENT_PORT=50000
 export JENKINS_SSH_AGENT_PORT=50022
 export CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
+
+# Gitea
+export GITEA_ADMIN_ID="projectpi"
+export GITEA_ADMIN_PASSWORD="password123!"
+export GITEA_ADMIN_EMAIL="experimenter@example.com"
+export GITEA_HOME=./gitea_home
+export GITEA_USER_UID=20049
+export GITEA_USER_GID=10000
+export GITEA_APP_NAME="AERPAW Experimeter Gitea"
+export GITEA_ROOT_URL=https://127.0.0.1:8443/gitea/
+export GITEA_SSH_AGENT_PORT=3022
+export GITEA_DISABLE_REGISTRATION=true
+export GITEA_INSTALL_LOCK=true
 
 # Nginx
 export NGINX_HTTP_PORT=8080

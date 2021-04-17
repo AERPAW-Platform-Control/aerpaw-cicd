@@ -22,6 +22,15 @@ JENKINS_INBOUND_CLI_PORT=${JENKINS_INBOUND_CLI_PORT:-50022}
 JENKINS_ADMIN_ID=${JENKINS_ADMIN_ID:-admin}
 JENKINS_ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD:-password123!}
 
+# gitea - gitea/gitea:1
+GITEA_USER_UID=${GITEA_USER_UID:-1000}
+GITEA_USER_GID=${GITEA_USER_GID:-1000}
+GITEA_APP_NAME=${GITEA_APP_NAME:-"AERPAW Operator Gitea"}
+GITEA_ROOT_URL=${GITEA_ROOT_URL:-https://127.0.0.1:8443/gitea/}
+GITEA_SSH_AGENT_PORT=${GITEA_SSH_AGENT_PORT:-3022}
+GITEA_DISABLE_REGISTRATION=${GITEA_DISABLE_REGISTRATION:-true}
+GITEA_INSTALL_LOCK=${GITEA_INSTALL_LOCK:-true}
+
 # nginx - nginx:latest
 NGINX_INDEX=${NGINX_INDEX:-./nginx/index.html}
 NGINX_CONF=${NGINX_CONF:-./nginx/default.conf}
@@ -29,6 +38,9 @@ NGINX_SSL_DIR=${NGINX_SSL_DIR:-./ssl}
 NGINX_LOG_DIR=${NGINX_LOG_DIR:-./logs/nginx}
 NGINX_HTTP_PORT=${NGINX_HTTP_PORT:-8080}
 NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT:-8443}
+
+# docker networks
+DOCKER_SUBNET=${DOCKER_SUBNET:-10.100.1.0/24}
 EOF
 }
 
@@ -69,6 +81,22 @@ server {
         add_header 'X-SSH-Endpoint' '${FQDN_OR_IP:-127.0.0.1}:${JENKINS_SSH_AGENT_PORT:-50022}' always;
     }
 
+    location /gitea/ {
+
+        proxy_set_header        Host \$host:${NGINX_HTTPS_PORT:-8443};
+        proxy_set_header        X-Real-IP \$remote_addr;
+        proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto \$scheme;
+
+        # Fix the "It appears that your reverse proxy set up is broken" error.
+        proxy_pass              http://gitea-${AERPAW_UUID}:3000/;
+        proxy_read_timeout      90;
+
+        # Required for new HTTP-based CLI
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+    }
+
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
@@ -83,7 +111,7 @@ _generate_index_html() {
 <!DOCTYPE html>
 <html>
 <head>
-<title>AERPAW CI/CD</title>
+<title>AERPAW Experimenter CI/CD</title>
 <style>
     body {
         width: 90%;
@@ -93,15 +121,15 @@ _generate_index_html() {
 </style>
 </head>
 <body>
-<h1>AERPAW CI/CD (Jenkins with Gitea)</h1>
+<h1>AERPAW Experimenter CI/CD (Jenkins with Gitea)</h1>
 <p>Choose from the options below: </p>
 <hr>
 <p>
     <b>Jenkins</b> - <a href="https://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/jenkins/">
       https://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/jenkins/
     </a><br/>
-    <b>Gitea</b> - <a href="http://127.0.0.1:8080/gitea/">
-      http://127.0.0.1:8080/gitea/
+    <b>Gitea</b> - <a href="https://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/gitea/">
+      https://${FQDN_OR_IP:-127.0.0.1}:${NGINX_HTTPS_PORT:-8443}/gitea/
     </a><br/>
 </p>
 </body>
@@ -122,17 +150,20 @@ jenkins:
     local:
       allowsSignup: false
       users:
-        - id: ${DBQT}${JENKINS_ADMIN_ID:-admin}${DBQT}
-          name: ${DBQT}${JENKINS_ADMIN_NAME:-AERPAW Admin}${DBQT}
-          description: "AERPAW Admin"
+        - id: ${DBQT}admin${DBQT}
+          name: ${DBQT}AERPAW Admin${DBQT}
+          description: ${DBQT}AERPAW Admin${DBQT}
           password: ${DBQT}${JENKINS_ADMIN_PASSWORD:-password123!}${DBQT}
-        - id: "newuser"
-          password: "password123!"
+        - id: ${DBQT}${JENKINS_ADMIN_ID}${DBQT}
+          name: ${DBQT}${JENKINS_ADMIN_NAME:-AERPAW Experimenter Admin}${DBQT}
+          description: ${DBQT}Project PI${DBQT}
+          password: ${DBQT}${JENKINS_ADMIN_PASSWORD:-password123!}${DBQT}
 
   authorizationStrategy:
     globalMatrix:
       permissions:
         - "Overall/Administer:admin"
+        - "Overall/Administer:projectpi"
         - "Overall/Read:authenticated"
 
   remotingSecurity:
@@ -162,6 +193,8 @@ services:
       context: ./jenkins
       dockerfile: Dockerfile
     container_name: jenkins-${AERPAW_UUID}
+    networks:
+      - cicd-net-${AERPAW_UUID}
     ports:
       - '${JENKINS_SLAVE_AGENT_PORT}:50000'
       - '${JENKINS_SSH_AGENT_PORT}:50022'
@@ -177,9 +210,30 @@ services:
       - CASC_JENKINS_CONFIG=${CASC_JENKINS_CONFIG}
     restart: always
 
+  gitea-${AERPAW_UUID}:
+    image: gitea/gitea:1
+    container_name: gitea-${AERPAW_UUID}
+    networks:
+      - cicd-net-${AERPAW_UUID}
+    environment:
+      - USER_UID=${GITEA_USER_UID}
+      - USER_GID=${GITEA_USER_GID}
+      - APP_NAME=${DBQT}${GITEA_APP_NAME}${DBQT}
+      - ROOT_URL=${DBQT}${GITEA_ROOT_URL}${DBQT}
+      - DISABLE_REGISTRATION=${GITEA_DISABLE_REGISTRATION}
+      - INSTALL_LOCK=${GITEA_INSTALL_LOCK}
+    volumes:
+      - ${GITEA_HOME}:/data
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '${GITEA_SSH_AGENT_PORT}:22'
+    restart: always
+
   nginx-${AERPAW_UUID}:
     image: nginx:latest
     container_name: nginx-${AERPAW_UUID}
+    networks:
+      - cicd-net-${AERPAW_UUID}
     ports:
       - ${NGINX_HTTP_PORT}:80
       - ${NGINX_HTTPS_PORT}:443
@@ -189,6 +243,13 @@ services:
       - ${NGINX_SSL_DIR}:/etc/ssl
       - ${NGINX_LOG_DIR}:/var/log/nginx
     restart: always
+
+networks:
+  cicd-net-${AERPAW_UUID}:
+    ipam:
+      driver: default
+      config:
+        - subnet: "${DOCKER_SUBNET}"
 EOF
 }
 
